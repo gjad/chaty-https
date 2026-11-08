@@ -1,0 +1,7 @@
+# The app's own routes get the app shell (200 rewrite to "/"). Any other unknown path falls through to 404.html (404).
+# Keep in sync with the routes in src/router/index.js.
+/login / 200
+/login/ / 200
+/rooms / 200
+/rooms/ / 200
+/chat/* / 200

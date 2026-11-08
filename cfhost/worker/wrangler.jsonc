@@ -1,0 +1,59 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "chatboxy-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Set to true temporarily when scripts/import-selfhost.mjs must reach the Worker from a non-browser client
+  // (the efxopen.com zone challenges those); keep ADMIN_TOKEN deleted otherwise.
+  "workers_dev": false,
+  "preview_urls": false,
+
+  // Workers Logs: persists invocation logs and console output (console.error / structured {type:"security"} lines).
+  // Retention is short (see Cloudflare plan limits); long-term records live in the audit_log table instead.
+  "observability": { "enabled": true },
+  // Data lives in the ChatHub object's built-in SQLite database (no D1 / KV needed).
+  // Images are stored in R2.
+  "r2_buckets": [
+    { "binding": "UPLOADS", "bucket_name": "chatfile" }
+  ],
+
+  "durable_objects": {
+    "bindings": [
+      { "name": "HUB", "class_name": "ChatHub" },
+      { "name": "RATE_LIMITER", "class_name": "RateLimiter" }
+    ]
+  },
+
+  // SQLite-backed classes (required for ctx.storage.sql).
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["ChatHub", "RateLimiter"] }
+  ],
+
+  "vars": {
+    // Bumping this makes connected clients reload (version-check event).
+    "APP_VERSION": "91",
+    // URL opened when a Bark notification is tapped.
+    "APP_URL": "https://csa.efxopen.com/",
+    "BARK_ENABLED": "true",
+    // Sites authorized to embed the chat widget (comma separated). Entries: https://www.example.com,
+    // https://*.example.com (subdomains only - list the bare domain too), or a bare host.
+    // Empty = nobody (fail closed). Prefer exact origins over wildcards: a compromised subdomain inherits the trust.
+    "ALLOWED_ORIGINS": "https://haoibtw.pages.dev,https://fxrebateth.pages.dev,https://haoib.pages.dev,https://efxopen.com,https://*.efxopen.com,https://chatboxy-embed.pages.dev,https://haoib.com,https://*.haoib.com,https://haoib.net,https://*.haoib.net,https://haoib.org,https://*.haoib.org,https://fxrebateth.com,https://*.fxrebateth.com,https://goodib.com,https://*.goodib.com,https://cmbro.com,https://*.cmbro.com,https://dailyfxrebate.com,https://*.dailyfxrebate.com,https://topfxrebate.com,https://*.topfxrebate.com",
+    // Optional: wnam | enam | sam | weur | eeur | apac | oc | afr | me
+    // Only takes effect when the ChatHub object is first created.
+    "HUB_LOCATION_HINT": ""
+  },
+
+  // Same zone as the Pages custom domain (csa.efxopen.com) so the agent cookies stay same-site.
+  "routes": [
+    { "pattern": "csa.efxopen.com/api/*", "zone_name": "efxopen.com" },
+    { "pattern": "csa.efxopen.com/ws", "zone_name": "efxopen.com" },
+    { "pattern": "csa.efxopen.com/chatuploads/*", "zone_name": "efxopen.com" }
+  ]
+
+  // Secrets (wrangler secret put <NAME>): JWT_SECRET, COOKIE_SECRET (optional),
+  // GOOGLE_TRANSLATE_API_KEY (optional), BARK_URLS (optional, comma separated),
+  // ADMIN_TOKEN (optional; enables /api/admin/* for agent creation and data import)
+}

@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Cloudflare Pages project that serves https://csa.efxopen.com (deployed with `npm run deploy`).
+  // Unknown URLs answer 404 because public/404.html exists; the app's own routes are rewritten to index.html
+  // by public/_redirects (keep it in sync with src/router/index.js).
+  "name": "chatboxy-agent",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-10-19"
+}

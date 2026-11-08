@@ -1,0 +1,28 @@
+{
+  "name": "client-agent",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "predev": "node ../scripts/sync-rt-client.mjs",
+    "prebuild": "node ../scripts/sync-rt-client.mjs",
+    "preview": "npm run build && wrangler pages dev dist",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name chatboxy-agent --branch main --commit-dirty=true"
+  },
+  "dependencies": {
+    "@chatscope/chat-ui-kit-react": "^2.1.1",
+    "@chatscope/chat-ui-kit-styles": "^1.4.0",
+    "axios": "^1.18.1",
+    "compressorjs": "^1.3.0",
+    "vue": "^3.5.39",
+    "vue-router": "^5.1.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.64.0",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "vite": "^8.1.1",
+    "wrangler": "^4.151.2"
+  }
+}
